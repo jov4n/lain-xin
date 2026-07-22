@@ -1,5 +1,9 @@
 ---
+import { withBase } from '../lib/url';
+
+const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const bare = base && path.startsWith(base) ? path.slice(base.length) || '/' : path;
 
 const links = [
 	{ href: '/work', label: 'Work' },
@@ -11,14 +15,14 @@ const links = [
 ];
 
 function isActive(href: string) {
-	if (href === '/') return path === '/';
-	return path === href || path.startsWith(`${href}/`);
+	if (href === '/') return bare === '/' || bare === '';
+	return bare === href || bare.startsWith(`${href}/`);
 }
 ---
 
 <header class="nav">
 	<div class="nav-inner container">
-		<a class="nav-brand" href="/" aria-label="lain.xin home">
+		<a class="nav-brand" href={withBase('/')} aria-label="lain.xin home">
 			<span class="nav-mark" aria-hidden="true"></span>
 			<span class="nav-name">LAIN</span>
 			<span class="nav-tld">.XIN</span>
@@ -37,7 +41,7 @@ function isActive(href: string) {
 		<nav id="nav-links" class="nav-links" data-nav-links>
 			{
 				links.map((link) => (
-					<a href={link.href} class:list={[{ active: isActive(link.href) }]}>
+					<a href={withBase(link.href)} class:list={[{ active: isActive(link.href) }]}>
 						{link.label}
 					</a>
 				))

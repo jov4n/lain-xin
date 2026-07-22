@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import { getCollection, render } from 'astro:content';
+import { withBase } from '../../lib/url';
 
 export async function getStaticPaths() {
 	const projects = await getCollection('projects');
@@ -28,7 +29,7 @@ const statusLabel: Record<string, string> = {
 
 	<article class="section is-visible container article">
 		<p class="section-label">
-			<a href="/work">Work</a>
+			<a href={withBase('/work')}>Work</a>
 			<span aria-hidden="true"> / </span>
 			{statusLabel[project.data.status]}
 			<span aria-hidden="true"> · </span>
@@ -58,7 +59,7 @@ const statusLabel: Record<string, string> = {
 			)
 		}
 		<p class="back">
-			<a href="/work">← All work</a>
+			<a href={withBase('/work')}>← All work</a>
 		</p>
 	</article>
 

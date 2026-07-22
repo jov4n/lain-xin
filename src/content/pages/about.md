@@ -17,4 +17,4 @@ Phosphor on graphite. Zero radius. Grids that drift. Typography with a voice. Th
 
 ## Contact
 
-Reach the lab at [hello@lain.xin](mailto:hello@lain.xin), join [System Nebula on Discord](https://discord.gg/bGxhpxh95h), or follow work as it lands on [/lab](/lab) and [/work](/work).
+Reach the lab at [hello@lain.xin](mailto:hello@lain.xin), join [System Nebula on Discord](https://discord.gg/bGxhpxh95h), or follow work as it lands on [lab](../lab/) and [work](../work/).

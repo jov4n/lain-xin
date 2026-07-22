@@ -5,13 +5,14 @@ import Footer from '../../components/Footer.astro';
 import PostList from '../../components/PostList.astro';
 import { getCollection } from 'astro:content';
 import site from '../../data/site.json';
+import { withBase } from '../../lib/url';
 
 const page = site.pages.writing;
 const posts = (await getCollection('posts'))
 	.filter((post) => !post.data.draft && !post.id.startsWith('_'))
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
 	.map((post) => ({
-		href: `/writing/${post.id}`,
+		href: withBase(`/writing/${post.id}`),
 		title: post.data.title,
 		summary: post.data.summary,
 		date: post.data.date.toISOString(),

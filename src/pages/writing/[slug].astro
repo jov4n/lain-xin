@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import { getCollection, render } from 'astro:content';
+import { withBase } from '../../lib/url';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('posts');
@@ -29,7 +30,7 @@ const dateLabel = post.data.date.toLocaleDateString('en-US', {
 
 	<article class="section is-visible container article">
 		<p class="section-label">
-			<a href="/writing">Writing</a>
+			<a href={withBase('/writing')}>Writing</a>
 			<span aria-hidden="true"> · </span>
 			<time datetime={post.data.date.toISOString()}>{dateLabel}</time>
 		</p>
@@ -39,7 +40,7 @@ const dateLabel = post.data.date.toLocaleDateString('en-US', {
 			<Content />
 		</div>
 		<p class="back">
-			<a href="/writing">← All writing</a>
+			<a href={withBase('/writing')}>← All writing</a>
 		</p>
 	</article>
 

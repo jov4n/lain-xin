@@ -1,5 +1,6 @@
 ---
 import site from '../data/site.json';
+import { withBase } from '../lib/url';
 
 const year = new Date().getFullYear();
 ---
@@ -17,8 +18,8 @@ const year = new Date().getFullYear();
 				>{site.contact.discordLabel}</a
 			>
 			<a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
-			<a href="/about">About</a>
-			<a href="/lab">Lab feed</a>
+			<a href={withBase('/about')}>About</a>
+			<a href={withBase('/lab')}>Lab feed</a>
 		</div>
 	</div>
 </footer>

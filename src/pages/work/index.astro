@@ -5,6 +5,7 @@ import Footer from '../../components/Footer.astro';
 import ProjectRow from '../../components/ProjectRow.astro';
 import { getCollection } from 'astro:content';
 import site from '../../data/site.json';
+import { withBase } from '../../lib/url';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const page = site.pages.work;
@@ -35,7 +36,7 @@ const statusLabel: Record<string, string> = {
 					status={statusLabel[project.data.status] ?? project.data.status}
 					tags={project.data.tags}
 					year={project.data.year}
-					href={`/work/${project.id}`}
+					href={withBase(`/work/${project.id}`)}
 				/>
 			))
 		}

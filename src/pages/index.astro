@@ -4,6 +4,7 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { getCollection } from 'astro:content';
 import site from '../data/site.json';
+import { withBase } from '../lib/url';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const lab = (await getCollection('lab')).sort(
@@ -77,8 +78,10 @@ const fmt = (d: Date) =>
 					</h1>
 					<p class="hero-support">{hero.support}</p>
 					<div class="hero-cta">
-						<a class="btn" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>
-						<a class="btn btn-ghost" href={hero.secondaryCta.href}>{hero.secondaryCta.label}</a>
+						<a class="btn" href={withBase(hero.primaryCta.href)}>{hero.primaryCta.label}</a>
+						<a class="btn btn-ghost" href={withBase(hero.secondaryCta.href)}
+							>{hero.secondaryCta.label}</a
+						>
 						<a
 							class="btn btn-ghost"
 							href={hero.discordCta.href}
@@ -93,7 +96,7 @@ const fmt = (d: Date) =>
 				<div class="panel-wrap">
 					<img
 						class="trainer"
-						src="/trainer.png"
+						src={withBase('/trainer.png')}
 						alt={trainer.alt}
 						width="1122"
 						height="1402"
@@ -135,7 +138,7 @@ const fmt = (d: Date) =>
 		<div class="build-list">
 			{
 				rows.map((p) => (
-					<a class="build-row" href={`/work/${p.id}`} style={`--hp: ${p.meta.hp}%`}>
+					<a class="build-row" href={withBase(`/work/${p.id}`)} style={`--hp: ${p.meta.hp}%`}>
 						<span class="build-sprite-box" aria-hidden="true">
 							<span class="build-sprite" style={`box-shadow: ${p.sprite}`} />
 						</span>
@@ -163,7 +166,7 @@ const fmt = (d: Date) =>
 			}
 		</div>
 		<p class="more">
-			<a href={home.work.moreHref}>{home.work.moreLabel}</a>
+			<a href={withBase(home.work.moreHref)}>{home.work.moreLabel}</a>
 		</p>
 	</section>
 
@@ -174,7 +177,7 @@ const fmt = (d: Date) =>
 			{
 				latest.map((entry) => (
 					<li>
-						<a href={home.signals.moreHref}>
+						<a href={withBase(home.signals.moreHref)}>
 							<span class="signal-date">{fmt(entry.data.date)}</span>
 							<span class="signal-channel">{entry.data.channel}</span>
 							<span class="signal-title">{entry.data.title}</span>
@@ -187,7 +190,7 @@ const fmt = (d: Date) =>
 			}
 		</ul>
 		<p class="more">
-			<a href={home.signals.moreHref}>{home.signals.moreLabel}</a>
+			<a href={withBase(home.signals.moreHref)}>{home.signals.moreLabel}</a>
 		</p>
 	</section>
 
@@ -196,7 +199,7 @@ const fmt = (d: Date) =>
 		<div class="channel-grid">
 			{
 				channels.map((ch) => (
-					<a href={ch.href}>
+					<a href={withBase(ch.href)}>
 						<span class="ch-num">{ch.num}</span>
 						<span class="ch-name">{ch.name}</span>
 						<em>{ch.desc}</em>
