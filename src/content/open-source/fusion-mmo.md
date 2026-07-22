@@ -1,7 +1,7 @@
 ---
 title: fusion-mmo
 summary: Godot Port with Multiplayer First Capabilities.
-repo: coming soon
+repo: http://github.com
 language: gdscript
 order: 2
 ---
