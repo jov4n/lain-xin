@@ -1,9 +1,9 @@
 ---
-title: lattice-css
-summary: Zero-radius design tokens and layout primitives extracted from the lab — grids, hairlines, phosphor accents.
-repo: https://github.com
-language: CSS
+title: maya-unified
+summary: maya unified is a voice agent pipeline with vtuber capabilities.
+repo: [maya-unified](https://github.com/System-Nebula/maya-unified)
+language: python
 order: 1
 ---
 
-Open tokens and base styles for sharp experimental UIs. More packages land here as they stabilize.
+Maya unified is a voice agent platform with tooling and vtubing capabilities.
