@@ -65,7 +65,10 @@ const fmt = (d: Date) =>
 <BaseLayout description={site.meta.description}>
 	<Nav slot="nav" />
 
-	<section class="hero" aria-label={site.meta.siteName}>
+	<section class="hero" data-hero aria-label={site.meta.siteName}>
+		<div class="hero-atmosphere" aria-hidden="true">
+			<canvas class="hero-fluid" data-hero-fluid width="1" height="1"></canvas>
+		</div>
 		<div class="hero-frame container">
 			<div class="hero-main">
 				<div class="hero-copy">
@@ -202,13 +205,31 @@ const fmt = (d: Date) =>
 	/* ---------- Hero ---------- */
 	.hero {
 		position: relative;
+		isolation: isolate;
+		overflow: hidden;
 		border-bottom: 1px solid var(--hairline);
-		background:
-			radial-gradient(ellipse 55% 40% at 78% 25%, rgba(124, 255, 178, 0.06), transparent 60%),
-			var(--void);
+		background: var(--void);
+	}
+
+	.hero-atmosphere {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		overflow: hidden;
+	}
+
+	/* WebGL Stable Fluids — phosphor dye wash */
+	.hero-fluid {
+		display: block;
+		width: 100%;
+		height: 100%;
+		opacity: 0.85;
 	}
 
 	.hero-frame {
+		position: relative;
+		z-index: 1;
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-md);
@@ -250,9 +271,13 @@ const fmt = (d: Date) =>
 	}
 
 	.hero-support {
-		color: var(--silver-dim);
-		font-size: 0.875rem;
-		max-width: 34rem;
+		color: var(--phosphor);
+		font-family: var(--font-display);
+		font-weight: 500;
+		font-size: 1.05rem;
+		line-height: 1.55;
+		letter-spacing: 0.01em;
+		max-width: 36rem;
 		margin-bottom: var(--space-md);
 	}
 
@@ -797,5 +822,28 @@ const fmt = (d: Date) =>
 			width: var(--hp);
 			transition: none;
 		}
+
+		.hero-fluid {
+			opacity: 0.55;
+		}
 	}
 </style>
+
+<script>
+	import { mountHeroFluid } from '../lib/hero-fluid';
+
+	const hero = document.querySelector('[data-hero]');
+	const canvas = document.querySelector('[data-hero-fluid]');
+
+	if (hero instanceof HTMLElement && canvas instanceof HTMLCanvasElement) {
+		const prev = (canvas as HTMLCanvasElement & { __fluid?: { destroy: () => void } }).__fluid;
+		prev?.destroy();
+
+		const handle = mountHeroFluid(hero, canvas, {
+			reduceMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
+			finePointer: matchMedia('(pointer: fine)').matches,
+		});
+		(canvas as HTMLCanvasElement & { __fluid?: typeof handle }).__fluid = handle ?? undefined;
+		canvas.dataset.fluid = handle ? 'on' : 'off';
+	}
+</script>
