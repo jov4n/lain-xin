@@ -1,18 +1,18 @@
 ---
 title: Maya Unified
-summary: A single signal for all the moving pieces — status, builds, and notes across the lab’s active surfaces.
+summary: A voice agent with tooling capabilities, animations and VRM support
 status: active
 tags: [platform, updates, dashboard]
 year: "2026"
 order: 1
 ---
 
-**Maya Unified** is the lab’s control plane for development work: one place to surface what’s shipping, what’s stalled, and what’s next.
+**Maya Unified** is the lab's voice agent. It is meant to become more then just an agent. 
 
-It stitches together project state, release notes, and short-form updates so Maya isn’t scattered across chats and half-finished docs. Think of it as a living status layer — less ceremony, more signal.
+It stitches together streaming, music, discord, voice agent capabilities. Can be a friend to talk to or a helpful assistant
 
 ### Current focus
-- Unified update feed into the lab channel
+- Reworking the UI
 - Project health snapshots for active builds
 - Clean handoff between experiments and production paths
 
