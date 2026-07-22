@@ -12,19 +12,19 @@
 	"hero": {
 		"eyebrowLeft": "LAIN.XIN",
 		"eyebrowRight": "PRESENT DAY. PRESENT TIME.",
-		"headlineLine1": "The lab is open.",
-		"headlineLine2": "The wire is",
-		"headlineAccent": "live",
-		"support": "An independent laboratory for developer tooling, multiplayer game systems, and open research — shipped in public, one signal at a time.",
+		"headlineLine1": "Experimenting",
+		"headlineLine2": "with the",
+		"headlineAccent": "unknown",
+		"support": "Developer tooling, multiplayer game systems, and open research — shipped in public, one signal at a time.",
 		"primaryCta": { "label": "View work", "href": "/work" },
 		"secondaryCta": { "label": "Lab feed", "href": "/lab" },
 		"discordCta": { "label": "System Nebula", "href": "https://discord.gg/bGxhpxh95h" },
 		"coords": "35.6762° N / 139.6503° E",
-		"protocol": "PROTOCOL 07 — LAYER 13",
+		"protocol": "PROTOCOL 0xDEADBEEF — LAYER 00",
 		"trainer": {
-			"alt": "lain, the lab trainer, holding a master ball",
+			"alt": "lain, the lab trainer",
 			"name": "LAIN.XIN",
-			"level": "13",
+			"level": "33",
 			"hp": 300,
 			"hpMax": 300,
 			"expPercent": 65,
@@ -35,7 +35,7 @@
 		"work": {
 			"label": "Active builds",
 			"title": "Current work",
-			"lead": "Maya Unified, Pokémon Infinite Fusion MMO, and the systems that keep them honest.",
+			"lead": "Maya Unified - Voice Agent, Pokémon Infinite Fusion MMO, and various more",
 			"moreLabel": "All projects →",
 			"moreHref": "/work"
 		},
@@ -59,7 +59,7 @@
 		"work": {
 			"label": "Work",
 			"title": "Projects in the lattice",
-			"lead": "Build surfaces for Maya Unified, Pokémon Infinite Fusion MMO, and the tooling that keeps them honest.",
+			"lead": "Build surfaces for Maya Unified, Pokémon Infinite Fusion MMO and various other tooling.",
 			"description": "Active experiments — Maya Unified, Infinite Fusion MMO, and more."
 		},
 		"writing": {
