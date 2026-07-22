@@ -1,0 +1,93 @@
+{
+	"meta": {
+		"siteName": "lain.xin",
+		"description": "Experimental lab for Maya Unified, Infinite Fusion MMO, writing, and open signal."
+	},
+	"contact": {
+		"email": "hello@lain.xin",
+		"github": "https://github.com",
+		"discord": "https://discord.gg/bGxhpxh95h",
+		"discordLabel": "System Nebula"
+	},
+	"hero": {
+		"eyebrowLeft": "LAIN.XIN",
+		"eyebrowRight": "PRESENT DAY. PRESENT TIME.",
+		"headlineLine1": "The lab is open.",
+		"headlineLine2": "The wire is",
+		"headlineAccent": "live",
+		"support": "An independent laboratory for developer tooling, multiplayer game systems, and open research — shipped in public, one signal at a time.",
+		"primaryCta": { "label": "View work", "href": "/work" },
+		"secondaryCta": { "label": "Lab feed", "href": "/lab" },
+		"discordCta": { "label": "System Nebula", "href": "https://discord.gg/bGxhpxh95h" },
+		"coords": "35.6762° N / 139.6503° E",
+		"protocol": "PROTOCOL 07 — LAYER 13",
+		"trainer": {
+			"alt": "lain, the lab trainer, holding a master ball",
+			"name": "LAIN.XIN",
+			"level": "13",
+			"hp": 300,
+			"hpMax": 300,
+			"expPercent": 65,
+			"status": "TRANSMITTING"
+		}
+	},
+	"home": {
+		"work": {
+			"label": "Active builds",
+			"title": "Current work",
+			"lead": "Maya Unified, Pokémon Infinite Fusion MMO, and the systems that keep them honest.",
+			"moreLabel": "All projects →",
+			"moreHref": "/work"
+		},
+		"signals": {
+			"label": "Signal log",
+			"title": "Latest transmissions",
+			"moreLabel": "Full lab feed →",
+			"moreHref": "/lab"
+		},
+		"index": {
+			"label": "Index"
+		}
+	},
+	"channels": [
+		{ "num": "01", "name": "Writing", "desc": "Lab notes & essays", "href": "/writing" },
+		{ "num": "02", "name": "Open Source", "desc": "Public tooling", "href": "/open-source" },
+		{ "num": "03", "name": "Services", "desc": "Work with the lab", "href": "/services" },
+		{ "num": "04", "name": "About", "desc": "Why this exists", "href": "/about" }
+	],
+	"pages": {
+		"work": {
+			"label": "Work",
+			"title": "Projects in the lattice",
+			"lead": "Build surfaces for Maya Unified, Pokémon Infinite Fusion MMO, and the tooling that keeps them honest.",
+			"description": "Active experiments — Maya Unified, Infinite Fusion MMO, and more."
+		},
+		"writing": {
+			"label": "Writing",
+			"title": "Lab notes",
+			"lead": "Essays and short transmissions from the experiment.",
+			"description": "Lab notes and essays from lain.xin."
+		},
+		"lab": {
+			"label": "Lab",
+			"title": "Dev work updates",
+			"lead": "Chronological signals — Maya Unified, Infinite Fusion MMO, and everything else coming online.",
+			"description": "Chronological dev work updates from the lain.xin experiment."
+		},
+		"openSource": {
+			"label": "Open Source",
+			"title": "Public signal",
+			"lead": "Packages and patterns extracted from the lab as they stabilize.",
+			"description": "Public tooling and packages from the lain.xin lab."
+		},
+		"services": {
+			"label": "Services",
+			"title": "Work with the lab",
+			"lead": "Engagements for teams who want sharp systems and intentional surfaces — not another template.",
+			"description": "Prototype, frontend, and automation work with the lain.xin lab."
+		}
+	},
+	"footer": {
+		"tagline": "experimental lab"
+	}
+}

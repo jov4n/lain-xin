@@ -1,0 +1,74 @@
+---
+import site from '../data/site.json';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+	<div class="container footer-inner">
+		<div class="footer-brand">
+			<span class="footer-mark" aria-hidden="true"></span>
+			<span>{site.meta.siteName}</span>
+			<span class="meta">{site.footer.tagline} // {year}</span>
+		</div>
+		<div class="footer-links">
+			<a href={site.contact.github} rel="noopener noreferrer" target="_blank">GitHub</a>
+			<a href={site.contact.discord} rel="noopener noreferrer" target="_blank"
+				>{site.contact.discordLabel}</a
+			>
+			<a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+			<a href="/about">About</a>
+			<a href="/lab">Lab feed</a>
+		</div>
+	</div>
+</footer>
+
+<style>
+	.footer {
+		border-top: 1px solid var(--hairline);
+		padding-block: var(--space-md);
+		margin-top: auto;
+	}
+
+	.footer-inner {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-md);
+	}
+
+	.footer-brand {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem;
+		font-family: var(--font-pixel);
+		font-size: 0.625rem;
+		color: #eef0f4;
+	}
+
+	.footer-mark {
+		width: 0.45rem;
+		height: 0.45rem;
+		background: var(--phosphor);
+		box-shadow: 0 0 10px var(--phosphor-glow);
+	}
+
+	.footer-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.footer-links a {
+		font-size: 0.6875rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--silver-dim);
+	}
+
+	.footer-links a:hover {
+		color: var(--phosphor);
+	}
+</style>

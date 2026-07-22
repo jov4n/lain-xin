@@ -1,0 +1,74 @@
+---
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = 'lain',
+	description = 'Experimental lab for unified dev work, games, writing, and open signal.',
+} = Astro.props;
+
+const pageTitle = title === 'lain' ? 'lain.xin' : `${title} — lain.xin`;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<meta name="theme-color" content="#07080a" />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={Astro.url.href} />
+		<meta property="og:site_name" content="lain.xin" />
+		<link rel="canonical" href={Astro.url.href} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+			rel="stylesheet"
+		/>
+		<title>{pageTitle}</title>
+	</head>
+	<body>
+		<div id="app">
+			<slot name="nav" />
+			<main>
+				<slot />
+			</main>
+			<slot name="footer" />
+		</div>
+		<script>
+			const sections = document.querySelectorAll('.section');
+			if (sections.length && 'IntersectionObserver' in window) {
+				const io = new IntersectionObserver(
+					(entries) => {
+						for (const entry of entries) {
+							if (entry.isIntersecting) {
+								entry.target.classList.add('is-visible');
+								io.unobserve(entry.target);
+							}
+						}
+					},
+					{ rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+				);
+				sections.forEach((el) => io.observe(el));
+			} else {
+				sections.forEach((el) => el.classList.add('is-visible'));
+			}
+		</script>
+	</body>
+</html>
+
+<style is:global>
+	@import '../styles/global.css';
+
+	main {
+		flex: 1;
+	}
+</style>

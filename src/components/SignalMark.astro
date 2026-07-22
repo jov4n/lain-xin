@@ -1,0 +1,28 @@
+---
+interface Props {
+	size?: 'sm' | 'md';
+}
+
+const { size = 'md' } = Astro.props;
+---
+
+<span class:list={['signal-mark', size]} aria-hidden="true"></span>
+
+<style>
+	.signal-mark {
+		display: inline-block;
+		background: var(--phosphor);
+		box-shadow: 0 0 14px var(--phosphor-glow);
+		flex-shrink: 0;
+	}
+
+	.signal-mark.sm {
+		width: 0.4rem;
+		height: 0.4rem;
+	}
+
+	.signal-mark.md {
+		width: 0.55rem;
+		height: 0.55rem;
+	}
+</style>

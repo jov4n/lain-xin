@@ -1,0 +1,132 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { getCollection, render } from 'astro:content';
+import site from '../data/site.json';
+
+const page = site.pages.lab;
+const entries = (await getCollection('lab')).sort(
+	(a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const rendered = await Promise.all(
+	entries.map(async (entry) => {
+		const { Content } = await render(entry);
+		return { entry, Content };
+	}),
+);
+---
+
+<BaseLayout title={page.label} description={page.description}>
+	<Nav slot="nav" />
+
+	<section class="section is-visible container page-head">
+		<p class="section-label">{page.label}</p>
+		<h1 class="section-title">{page.title}</h1>
+		<p class="section-lead">{page.lead}</p>
+	</section>
+
+	<section class="section is-visible container page-body">
+		<ol class="lab-feed">
+			{
+				rendered.map(({ entry, Content }) => (
+					<li>
+						<header>
+							<span class="channel">{entry.data.channel}</span>
+							{entry.data.project && <span class="project">{entry.data.project}</span>}
+							<time datetime={entry.data.date.toISOString()}>
+								{entry.data.date.toLocaleDateString('en-US', {
+									year: 'numeric',
+									month: 'short',
+									day: '2-digit',
+									timeZone: 'UTC',
+								})}
+							</time>
+						</header>
+						<h2>{entry.data.title}</h2>
+						<div class="body">
+							<Content />
+						</div>
+					</li>
+				))
+			}
+		</ol>
+	</section>
+
+	<Footer slot="footer" />
+</BaseLayout>
+
+<style>
+	.page-head {
+		padding-bottom: var(--space-md);
+	}
+
+	.page-body {
+		padding-top: 0;
+		padding-bottom: var(--space-2xl);
+	}
+
+	.lab-feed {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.lab-feed li {
+		padding: var(--space-md) 0;
+		border-top: 1px solid var(--hairline);
+	}
+
+	.lab-feed li:last-child {
+		border-bottom: 1px solid var(--hairline);
+	}
+
+	header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.channel {
+		font-size: 0.625rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--phosphor);
+	}
+
+	.project {
+		font-size: 0.625rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--silver-dim);
+		border: 1px solid var(--hairline);
+		padding: 0.15rem 0.4rem;
+	}
+
+	time {
+		font-size: 0.6875rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--silver-dim);
+		margin-left: auto;
+	}
+
+	h2 {
+		font-size: 1.25rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.body :global(p) {
+		color: var(--silver-dim);
+		max-width: 42rem;
+	}
+
+	@media (max-width: 640px) {
+		time {
+			margin-left: 0;
+			width: 100%;
+		}
+	}
+</style>

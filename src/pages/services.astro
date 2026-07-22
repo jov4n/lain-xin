@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { getCollection, render } from 'astro:content';
+import site from '../data/site.json';
+
+const page = site.pages.services;
+const items = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+
+const rendered = await Promise.all(
+	items.map(async (item) => {
+		const { Content } = await render(item);
+		return { item, Content };
+	}),
+);
+---
+
+<BaseLayout title={page.label} description={page.description}>
+	<Nav slot="nav" />
+
+	<section class="section is-visible container page-head">
+		<p class="section-label">{page.label}</p>
+		<h1 class="section-title">{page.title}</h1>
+		<p class="section-lead">{page.lead}</p>
+	</section>
+
+	<section class="section is-visible container page-body">
+		<ol class="service-list">
+			{
+				rendered.map(({ item, Content }, index) => (
+					<li>
+						<span class="idx">{String(index + 1).padStart(2, '0')}</span>
+						<div>
+							<h2>{item.data.title}</h2>
+							<p class="summary">{item.data.summary}</p>
+							<div class="body">
+								<Content />
+							</div>
+						</div>
+					</li>
+				))
+			}
+		</ol>
+		<p class="contact">
+			<a class="btn" href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+		</p>
+	</section>
+
+	<Footer slot="footer" />
+</BaseLayout>
+
+<style>
+	.page-head {
+		padding-bottom: var(--space-md);
+	}
+
+	.page-body {
+		padding-top: 0;
+		padding-bottom: var(--space-2xl);
+	}
+
+	.service-list li {
+		display: grid;
+		grid-template-columns: 3.5rem 1fr;
+		gap: var(--space-md);
+		padding: var(--space-md) 0;
+		border-top: 1px solid var(--hairline);
+	}
+
+	.service-list li:last-child {
+		border-bottom: 1px solid var(--hairline);
+	}
+
+	.idx {
+		font-size: 0.75rem;
+		letter-spacing: 0.1em;
+		color: var(--phosphor);
+		padding-top: 0.35rem;
+	}
+
+	h2 {
+		font-size: 1.35rem;
+		margin-bottom: 0.4rem;
+	}
+
+	.summary {
+		color: var(--silver-dim);
+		margin-bottom: 0.75rem;
+	}
+
+	.body :global(p) {
+		color: var(--silver-dim);
+		max-width: 42rem;
+	}
+
+	.contact {
+		margin-top: var(--space-lg);
+	}
+</style>

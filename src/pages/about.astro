@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { getEntry, render } from 'astro:content';
+
+const about = await getEntry('pages', 'about');
+if (!about) throw new Error('Missing src/content/pages/about.md');
+const { Content } = await render(about);
+---
+
+<BaseLayout title="About" description={about.data.description}>
+	<Nav slot="nav" />
+
+	<section class="section is-visible container about">
+		<p class="section-label">{about.data.label ?? 'About'}</p>
+		<h1 class="section-title">{about.data.title}</h1>
+		{about.data.lead && <p class="lead">{about.data.lead}</p>}
+		<div class="prose">
+			<Content />
+		</div>
+	</section>
+
+	<Footer slot="footer" />
+</BaseLayout>
+
+<style>
+	.about {
+		padding-bottom: var(--space-2xl);
+	}
+
+	.lead {
+		font-size: 1.05rem;
+		color: var(--silver);
+		max-width: 40rem;
+		margin-bottom: var(--space-xl);
+	}
+
+	.prose {
+		max-width: 40rem;
+		border-top: 1px solid var(--hairline);
+		padding-top: var(--space-lg);
+		display: grid;
+		gap: var(--space-lg);
+	}
+
+	.prose :global(h2) {
+		font-size: 1.15rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.prose :global(p) {
+		color: var(--silver-dim);
+		margin-bottom: 0.75rem;
+	}
+
+	.prose :global(strong) {
+		color: #eef0f4;
+		font-weight: 600;
+	}
+
+	.prose :global(a) {
+		color: var(--phosphor);
+	}
+</style>

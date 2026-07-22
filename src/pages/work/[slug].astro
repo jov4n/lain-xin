@@ -1,0 +1,147 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+	const projects = await getCollection('projects');
+	return projects.map((project) => ({
+		params: { slug: project.id },
+		props: { project },
+	}));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+const statusLabel: Record<string, string> = {
+	active: 'Active',
+	building: 'Building',
+	signal: 'Signal',
+	archived: 'Archived',
+};
+---
+
+<BaseLayout title={project.data.title} description={project.data.summary}>
+	<Nav slot="nav" />
+
+	<article class="section is-visible container article">
+		<p class="section-label">
+			<a href="/work">Work</a>
+			<span aria-hidden="true"> / </span>
+			{statusLabel[project.data.status]}
+			<span aria-hidden="true"> · </span>
+			{project.data.year}
+		</p>
+		<h1 class="section-title">{project.data.title}</h1>
+		<p class="section-lead">{project.data.summary}</p>
+		{
+			project.data.tags.length > 0 && (
+				<ul class="tags">
+					{project.data.tags.map((tag) => (
+						<li>{tag}</li>
+					))}
+				</ul>
+			)
+		}
+		<div class="prose">
+			<Content />
+		</div>
+		{
+			project.data.link && (
+				<p class="external">
+					<a class="btn" href={project.data.link} target="_blank" rel="noopener noreferrer">
+						External link
+					</a>
+				</p>
+			)
+		}
+		<p class="back">
+			<a href="/work">← All work</a>
+		</p>
+	</article>
+
+	<Footer slot="footer" />
+</BaseLayout>
+
+<style>
+	.article {
+		padding-bottom: var(--space-2xl);
+	}
+
+	.section-label a {
+		color: var(--phosphor-dim);
+	}
+
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem;
+		margin-bottom: var(--space-lg);
+	}
+
+	.tags li {
+		font-size: 0.625rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--silver-dim);
+		border: 1px solid var(--hairline);
+		padding: 0.25rem 0.5rem;
+	}
+
+	.prose {
+		max-width: 42rem;
+		color: var(--silver);
+	}
+
+	.prose :global(p) {
+		margin-bottom: 1rem;
+	}
+
+	.prose :global(strong) {
+		color: #eef0f4;
+		font-weight: 600;
+	}
+
+	.prose :global(h3) {
+		font-size: 1.125rem;
+		margin: 1.75rem 0 0.75rem;
+	}
+
+	.prose :global(ul) {
+		margin: 0 0 1rem 0;
+		padding: 0;
+	}
+
+	.prose :global(li) {
+		position: relative;
+		padding-left: 1rem;
+		margin-bottom: 0.4rem;
+		color: var(--silver-dim);
+	}
+
+	.prose :global(li)::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0.55em;
+		width: 0.35rem;
+		height: 1px;
+		background: var(--phosphor);
+	}
+
+	.external {
+		margin-top: var(--space-lg);
+	}
+
+	.back {
+		margin-top: var(--space-xl);
+	}
+
+	.back a {
+		font-size: 0.75rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+</style>

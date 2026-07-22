@@ -1,0 +1,141 @@
+---
+interface Props {
+	title: string;
+	summary: string;
+	status: string;
+	tags?: string[];
+	href: string;
+	year?: string;
+}
+
+const { title, summary, status, tags = [], href, year } = Astro.props;
+---
+
+<a class="project-row" href={href}>
+	<div class="project-meta">
+		<span class="status">{status}</span>
+		{year && <span class="year">{year}</span>}
+	</div>
+	<div class="project-body">
+		<h3>{title}</h3>
+		<p>{summary}</p>
+		{
+			tags.length > 0 && (
+				<ul class="tags">
+					{tags.map((tag) => (
+						<li>{tag}</li>
+					))}
+				</ul>
+			)
+		}
+	</div>
+	<span class="project-arrow" aria-hidden="true">→</span>
+</a>
+
+<style>
+	.project-row {
+		display: grid;
+		grid-template-columns: 7rem 1fr auto;
+		gap: var(--space-md);
+		align-items: start;
+		padding: var(--space-md) 0;
+		border-top: 1px solid var(--hairline);
+		color: inherit;
+		text-decoration: none;
+		transition: background-color 0.15s ease;
+	}
+
+	.project-row:last-child {
+		border-bottom: 1px solid var(--hairline);
+	}
+
+	.project-row:hover {
+		background: rgba(124, 255, 178, 0.03);
+		color: inherit;
+	}
+
+	.project-row:hover h3 {
+		color: var(--phosphor);
+	}
+
+	.project-meta {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		padding-top: 0.2rem;
+	}
+
+	.status {
+		font-size: 0.625rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--phosphor);
+	}
+
+	.year {
+		font-size: 0.625rem;
+		letter-spacing: 0.08em;
+		color: var(--silver-dim);
+	}
+
+	.project-body h3 {
+		font-size: 1.25rem;
+		margin-bottom: 0.4rem;
+	}
+
+	.project-body h3::before {
+		content: '▶ ';
+		font-size: 0.8125rem;
+		color: var(--phosphor);
+		opacity: 0;
+		transition: opacity 0.1s steps(2);
+	}
+
+	.project-row:hover .project-body h3::before {
+		opacity: 1;
+	}
+
+	.project-body p {
+		color: var(--silver-dim);
+		margin-bottom: 0.75rem;
+	}
+
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem;
+	}
+
+	.tags li {
+		font-size: 0.625rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--silver-dim);
+		border: 1px solid var(--hairline);
+		padding: 0.2rem 0.45rem;
+	}
+
+	.project-arrow {
+		color: var(--phosphor-dim);
+		font-size: 1.25rem;
+		padding-top: 0.15rem;
+		transition: transform 0.15s ease, color 0.15s ease;
+	}
+
+	.project-row:hover .project-arrow {
+		color: var(--phosphor);
+		transform: translateX(4px);
+	}
+
+	@media (max-width: 640px) {
+		.project-row {
+			grid-template-columns: 1fr auto;
+		}
+
+		.project-meta {
+			grid-column: 1 / -1;
+			flex-direction: row;
+			gap: 0.75rem;
+		}
+	}
+</style>

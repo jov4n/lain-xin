@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import PostList from '../../components/PostList.astro';
+import { getCollection } from 'astro:content';
+import site from '../../data/site.json';
+
+const page = site.pages.writing;
+const posts = (await getCollection('posts'))
+	.filter((post) => !post.data.draft && !post.id.startsWith('_'))
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+	.map((post) => ({
+		href: `/writing/${post.id}`,
+		title: post.data.title,
+		summary: post.data.summary,
+		date: post.data.date.toISOString(),
+		dateLabel: post.data.date.toLocaleDateString('en-US', {
+			year: 'numeric',
+			month: 'short',
+			day: '2-digit',
+			timeZone: 'UTC',
+		}),
+	}));
+---
+
+<BaseLayout title={page.label} description={page.description}>
+	<Nav slot="nav" />
+
+	<section class="section is-visible container page-head">
+		<p class="section-label">{page.label}</p>
+		<h1 class="section-title">{page.title}</h1>
+		<p class="section-lead">{page.lead}</p>
+	</section>
+
+	<section class="section is-visible container page-body">
+		<PostList posts={posts} />
+	</section>
+
+	<Footer slot="footer" />
+</BaseLayout>
+
+<style>
+	.page-head {
+		padding-bottom: var(--space-md);
+	}
+
+	.page-body {
+		padding-top: 0;
+		padding-bottom: var(--space-2xl);
+	}
+</style>

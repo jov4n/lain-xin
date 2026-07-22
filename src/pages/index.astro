@@ -1,0 +1,812 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { getCollection } from 'astro:content';
+import site from '../data/site.json';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const lab = (await getCollection('lab')).sort(
+	(a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const latest = lab.slice(0, 4);
+const { hero, home, channels } = site;
+const trainer = hero.trainer;
+const hpPct = Math.round((trainer.hp / trainer.hpMax) * 100);
+
+const statusMeta: Record<string, { label: string; hp: number }> = {
+	active: { label: 'ACTIVE', hp: 100 },
+	building: { label: 'BUILDING', hp: 65 },
+	signal: { label: 'SIGNAL', hp: 40 },
+	archived: { label: 'ARCHIVED', hp: 15 },
+};
+
+/* Procedural 8x8 sprite identicon from project title (mirrored) */
+function hash(str: string): number {
+	let h = 2166136261;
+	for (const c of str) {
+		h ^= c.charCodeAt(0);
+		h = Math.imul(h, 16777619);
+	}
+	return h >>> 0;
+}
+
+const PX = 4;
+function spriteShadow(title: string): string {
+	const h1 = hash(title);
+	const h2 = hash(title + '::accent');
+	const shadows: string[] = [];
+	for (let y = 0; y < 8; y++) {
+		for (let x = 0; x < 4; x++) {
+			const bit = (h1 >>> ((y * 4 + x) % 32)) & 1;
+			if (!bit) continue;
+			const accent = (h2 >>> ((y * 4 + x) % 32)) & 1;
+			const color = accent ? 'var(--silver)' : 'var(--phosphor)';
+			shadows.push(`${x * PX}px ${y * PX}px 0 0 ${color}`);
+			shadows.push(`${(7 - x) * PX}px ${y * PX}px 0 0 ${color}`);
+		}
+	}
+	return shadows.join(', ');
+}
+
+const rows = projects.map((p) => ({
+	...p,
+	sprite: spriteShadow(p.data.title),
+	meta: statusMeta[p.data.status] ?? statusMeta.signal,
+}));
+
+const fmt = (d: Date) =>
+	d
+		.toLocaleDateString('en-US', { month: 'short', day: '2-digit', timeZone: 'UTC' })
+		.toUpperCase();
+---
+
+<BaseLayout description={site.meta.description}>
+	<Nav slot="nav" />
+
+	<section class="hero" aria-label={site.meta.siteName}>
+		<div class="hero-frame container">
+			<div class="hero-main">
+				<div class="hero-copy">
+					<p class="hero-eyebrow brand-flicker">
+						{hero.eyebrowLeft} <span class="sep">//</span> {hero.eyebrowRight}
+					</p>
+					<h1 class="hero-headline">
+						{hero.headlineLine1}<br />{hero.headlineLine2}{' '}
+						<span class="wired">{hero.headlineAccent}</span>.
+					</h1>
+					<p class="hero-support">{hero.support}</p>
+					<div class="hero-cta">
+						<a class="btn" href={hero.primaryCta.href}>{hero.primaryCta.label}</a>
+						<a class="btn btn-ghost" href={hero.secondaryCta.href}>{hero.secondaryCta.label}</a>
+						<a
+							class="btn btn-ghost"
+							href={hero.discordCta.href}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							{hero.discordCta.label}
+						</a>
+					</div>
+				</div>
+
+				<div class="panel-wrap">
+					<img
+						class="trainer"
+						src="/trainer.png"
+						alt={trainer.alt}
+						width="1122"
+						height="1402"
+						loading="eager"
+					/>
+					<aside class="hero-panel" aria-label="Lab status">
+					<div class="panel-head">
+						<span class="panel-dot" aria-hidden="true"></span>
+						<span class="panel-title">{trainer.name}</span>
+						<span class="panel-lv">:L{trainer.level}</span>
+					</div>
+					<div class="panel-body">
+						<div class="stat-row">
+							<span class="stat-key">HP</span>
+							<span class="gauge-bar"><span class="gauge-fill" style={`--w: ${hpPct}%`}></span></span>
+						</div>
+						<div class="stat-num">{trainer.hp} / {trainer.hpMax}</div>
+						<div class="stat-row">
+							<span class="stat-key">EXP</span>
+							<span class="gauge-bar"><span class="gauge-fill dim" style={`--w: ${trainer.expPercent}%`}></span></span>
+						</div>
+					</div>
+					<div class="panel-foot">STATUS // {trainer.status}</div>
+					</aside>
+				</div>
+			</div>
+
+			<div class="hero-bottom">
+				<span>{hero.coords}</span>
+				<span>{hero.protocol}</span>
+			</div>
+		</div>
+	</section>
+
+	<section class="section container">
+		<p class="section-label">{home.work.label}</p>
+		<h2 class="section-title">{home.work.title}</h2>
+		<p class="section-lead">{home.work.lead}</p>
+		<div class="build-list">
+			{
+				rows.map((p) => (
+					<a class="build-row" href={`/work/${p.id}`} style={`--hp: ${p.meta.hp}%`}>
+						<span class="build-sprite-box" aria-hidden="true">
+							<span class="build-sprite" style={`box-shadow: ${p.sprite}`} />
+						</span>
+						<span class="build-body">
+							<span class="build-name">
+								<span class="cursor" aria-hidden="true">▶</span>
+								{p.data.title}
+							</span>
+							<span class="build-summary">{p.data.summary}</span>
+							<span class="build-tags">
+								{p.data.tags.map((tag) => (
+									<span class="tag">{tag}</span>
+								))}
+							</span>
+						</span>
+						<span class="build-side">
+							<span class="build-status">{p.meta.label}</span>
+							<span class="gauge-bar sm">
+								<span class="gauge-fill build-hp" />
+							</span>
+							<span class="build-year">{p.data.year}</span>
+						</span>
+					</a>
+				))
+			}
+		</div>
+		<p class="more">
+			<a href={home.work.moreHref}>{home.work.moreLabel}</a>
+		</p>
+	</section>
+
+	<section class="section container">
+		<p class="section-label">{home.signals.label}</p>
+		<h2 class="section-title">{home.signals.title}</h2>
+		<ul class="signal-feed">
+			{
+				latest.map((entry) => (
+					<li>
+						<a href={home.signals.moreHref}>
+							<span class="signal-date">{fmt(entry.data.date)}</span>
+							<span class="signal-channel">{entry.data.channel}</span>
+							<span class="signal-title">{entry.data.title}</span>
+							<span class="signal-arrow" aria-hidden="true">
+								→
+							</span>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+		<p class="more">
+			<a href={home.signals.moreHref}>{home.signals.moreLabel}</a>
+		</p>
+	</section>
+
+	<section class="section container strip">
+		<p class="section-label">{home.index.label}</p>
+		<div class="channel-grid">
+			{
+				channels.map((ch) => (
+					<a href={ch.href}>
+						<span class="ch-num">{ch.num}</span>
+						<span class="ch-name">{ch.name}</span>
+						<em>{ch.desc}</em>
+					</a>
+				))
+			}
+		</div>
+	</section>
+
+	<Footer slot="footer" />
+</BaseLayout>
+
+<style>
+	/* ---------- Hero ---------- */
+	.hero {
+		position: relative;
+		border-bottom: 1px solid var(--hairline);
+		background:
+			radial-gradient(ellipse 55% 40% at 78% 25%, rgba(124, 255, 178, 0.06), transparent 60%),
+			var(--void);
+	}
+
+	.hero-frame {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+		padding-block: var(--space-lg) var(--space-sm);
+	}
+
+	.hero-main {
+		display: grid;
+		grid-template-columns: 1fr minmax(16rem, 20rem);
+		gap: var(--space-lg);
+		align-items: start;
+	}
+
+	.hero-copy {
+		padding-top: 5.5rem;
+	}
+
+	.hero-eyebrow {
+		font-family: var(--font-pixel);
+		font-size: 0.5625rem;
+		letter-spacing: 0.08em;
+		color: var(--phosphor);
+		margin-bottom: var(--space-sm);
+	}
+
+	.hero-eyebrow .sep {
+		color: var(--silver-dim);
+	}
+
+	.hero-headline {
+		font-size: clamp(1.85rem, 4.2vw, 3.25rem);
+		letter-spacing: -0.03em;
+		margin-bottom: var(--space-sm);
+	}
+
+	.wired {
+		color: var(--phosphor);
+		text-shadow: 0 0 40px var(--phosphor-glow);
+	}
+
+	.hero-support {
+		color: var(--silver-dim);
+		font-size: 0.875rem;
+		max-width: 34rem;
+		margin-bottom: var(--space-md);
+	}
+
+	.hero-cta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+	}
+
+	.hero-bottom {
+		display: flex;
+		justify-content: space-between;
+		border-top: 1px solid var(--hairline);
+		padding-top: 0.75rem;
+		font-size: 0.625rem;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--silver-dim);
+	}
+
+	/* ---------- Status panel ---------- */
+	.hero-panel {
+		position: relative;
+		z-index: 1;
+		border: 1px solid var(--hairline);
+		background: rgba(8, 10, 12, 0.95);
+		backdrop-filter: blur(6px);
+	}
+
+	.panel-head {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.8rem 1.1rem;
+		border-bottom: 1px solid var(--hairline);
+	}
+
+	.panel-dot {
+		width: 0.45rem;
+		height: 0.45rem;
+		background: var(--phosphor);
+		box-shadow: 0 0 10px var(--phosphor-glow);
+		animation: pulse 2.4s ease-in-out infinite;
+	}
+
+	@keyframes pulse {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.35;
+		}
+	}
+
+	.panel-title {
+		font-family: var(--font-pixel);
+		font-size: 0.5625rem;
+		color: var(--ink);
+	}
+
+	.panel-lv {
+		margin-left: auto;
+		font-family: var(--font-pixel);
+		font-size: 0.5625rem;
+		color: var(--phosphor);
+	}
+
+	.panel-wrap {
+		position: relative;
+		padding-top: 18rem;
+		overflow: visible;
+	}
+
+	.trainer {
+		position: absolute;
+		top: 0;
+		left: 50%;
+		height: 32rem;
+		width: auto;
+		max-width: none;
+		object-fit: contain;
+		z-index: 0;
+		filter: drop-shadow(0 0 28px rgba(124, 255, 178, 0.14));
+		animation: trainer-bop 3.6s ease-in-out infinite;
+	}
+
+	@keyframes trainer-bop {
+		0%,
+		100% {
+			transform: translate(-50%, 0);
+		}
+		50% {
+			transform: translate(-50%, -3px);
+		}
+	}
+
+	.panel-body {
+		padding: 1rem 1.1rem;
+	}
+
+	.stat-row {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		margin-bottom: 0.4rem;
+	}
+
+	.stat-key {
+		font-family: var(--font-pixel);
+		font-size: 0.5rem;
+		color: var(--phosphor);
+		width: 1.9rem;
+		flex-shrink: 0;
+	}
+
+	.stat-row .gauge-bar {
+		flex: 1;
+	}
+
+	.stat-num {
+		font-family: var(--font-pixel);
+		font-size: 0.5625rem;
+		color: var(--silver);
+		text-align: right;
+		margin-bottom: 0.8rem;
+	}
+
+	.gauge-bar {
+		display: block;
+		height: 0.5rem;
+		border: 1px solid var(--hairline);
+		padding: 1px;
+		background:
+			repeating-linear-gradient(
+				90deg,
+				transparent,
+				transparent calc(5% - 1px),
+				var(--void) calc(5% - 1px),
+				var(--void) 5%
+			);
+	}
+
+	.gauge-fill {
+		display: block;
+		height: 100%;
+		width: var(--w, 0%);
+		background: var(--phosphor);
+		box-shadow: 0 0 8px var(--phosphor-glow);
+		animation: gauge-load 1.1s steps(20) both;
+	}
+
+	.gauge-fill.dim {
+		background: var(--phosphor-dim);
+		box-shadow: none;
+	}
+
+	@keyframes gauge-load {
+		from {
+			width: 0%;
+		}
+		to {
+			width: var(--w, 0%);
+		}
+	}
+
+	.panel-foot {
+		padding: 0.55rem 1.1rem;
+		font-size: 0.5625rem;
+		letter-spacing: 0.16em;
+		color: var(--silver-dim);
+		border-top: 1px solid var(--hairline);
+	}
+
+	/* ---------- Build rows ---------- */
+	.build-list {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.build-row {
+		display: grid;
+		grid-template-columns: 3.5rem 1fr minmax(10rem, 13rem);
+		gap: var(--space-md);
+		align-items: center;
+		padding: var(--space-md) 0;
+		border-top: 1px solid var(--hairline);
+		color: inherit;
+		text-decoration: none;
+		transition: background-color 0.15s ease;
+	}
+
+	.build-row:last-child {
+		border-bottom: 1px solid var(--hairline);
+	}
+
+	.build-row:hover {
+		background: rgba(124, 255, 178, 0.03);
+		color: inherit;
+	}
+
+	.build-sprite-box {
+		width: 3rem;
+		height: 3rem;
+		position: relative;
+		border: 1px solid var(--hairline);
+		background: rgba(124, 255, 178, 0.03);
+		display: block;
+	}
+
+	.build-sprite {
+		position: absolute;
+		top: 8px;
+		left: 8px;
+		width: 4px;
+		height: 4px;
+		background: transparent;
+	}
+
+	.build-row:hover .build-sprite {
+		animation: hop 0.5s steps(2) infinite;
+	}
+
+	@keyframes hop {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(-2px);
+		}
+	}
+
+	.build-body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		min-width: 0;
+	}
+
+	.build-name {
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 1.25rem;
+		letter-spacing: -0.01em;
+		color: var(--ink);
+		transition: color 0.15s ease;
+	}
+
+	.build-name .cursor {
+		font-size: 0.75rem;
+		color: var(--phosphor);
+		opacity: 0;
+		margin-right: 0.15rem;
+		transition: opacity 0.1s steps(2);
+	}
+
+	.build-row:hover .build-name {
+		color: var(--phosphor);
+	}
+
+	.build-row:hover .build-name .cursor {
+		opacity: 1;
+	}
+
+	.build-summary {
+		color: var(--silver-dim);
+		font-size: 0.8125rem;
+		max-width: 36rem;
+	}
+
+	.build-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem;
+		margin-top: 0.2rem;
+	}
+
+	.tag {
+		font-size: 0.625rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--silver-dim);
+		border: 1px solid var(--hairline);
+		padding: 0.15rem 0.45rem;
+	}
+
+	.build-side {
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+	}
+
+	.build-status {
+		font-family: var(--font-pixel);
+		font-size: 0.5rem;
+		color: var(--phosphor);
+	}
+
+	.gauge-bar.sm {
+		height: 0.45rem;
+	}
+
+	.gauge-fill.build-hp {
+		width: 0%;
+		animation: none;
+		transition: width 0.9s steps(20);
+	}
+
+	.section.is-visible .gauge-fill.build-hp {
+		width: var(--hp);
+	}
+
+	.build-year {
+		font-size: 0.625rem;
+		letter-spacing: 0.1em;
+		color: var(--silver-dim);
+	}
+
+	/* ---------- Signals ---------- */
+	.signal-feed {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.signal-feed li {
+		border-top: 1px solid var(--hairline);
+	}
+
+	.signal-feed li:last-child {
+		border-bottom: 1px solid var(--hairline);
+	}
+
+	.signal-feed a {
+		display: grid;
+		grid-template-columns: 5rem 6.5rem 1fr auto;
+		gap: var(--space-md);
+		align-items: baseline;
+		padding: 1.1rem 0;
+		color: inherit;
+		text-decoration: none;
+		transition: background-color 0.15s ease;
+	}
+
+	.signal-feed a:hover {
+		background: rgba(124, 255, 178, 0.03);
+		color: inherit;
+	}
+
+	.signal-date {
+		font-size: 0.6875rem;
+		letter-spacing: 0.08em;
+		color: var(--silver-dim);
+	}
+
+	.signal-channel {
+		font-size: 0.625rem;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--phosphor);
+	}
+
+	.signal-title {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: 1.05rem;
+		color: var(--ink);
+		transition: color 0.15s ease;
+	}
+
+	.signal-feed a:hover .signal-title {
+		color: var(--phosphor);
+	}
+
+	.signal-arrow {
+		color: var(--phosphor-dim);
+		transition: transform 0.15s ease, color 0.15s ease;
+	}
+
+	.signal-feed a:hover .signal-arrow {
+		color: var(--phosphor);
+		transform: translateX(4px);
+	}
+
+	.more {
+		margin-top: var(--space-md);
+	}
+
+	.more a {
+		font-size: 0.75rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+
+	/* ---------- Channels ---------- */
+	.channel-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		border: 1px solid var(--hairline);
+	}
+
+	.channel-grid a {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		padding: var(--space-md);
+		border-right: 1px solid var(--hairline);
+		color: inherit;
+		text-decoration: none;
+		transition: background-color 0.15s ease;
+	}
+
+	.channel-grid a:last-child {
+		border-right: none;
+	}
+
+	.channel-grid a:hover {
+		background: rgba(124, 255, 178, 0.04);
+		color: inherit;
+	}
+
+	.ch-num {
+		font-family: var(--font-pixel);
+		font-size: 0.5625rem;
+		color: var(--phosphor-dim);
+		margin-bottom: 0.5rem;
+	}
+
+	.channel-grid a:hover .ch-num {
+		color: var(--phosphor);
+	}
+
+	.ch-name {
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 1.125rem;
+		letter-spacing: -0.01em;
+		color: var(--ink);
+	}
+
+	.channel-grid a:hover .ch-name {
+		color: var(--phosphor);
+	}
+
+	.channel-grid em {
+		font-style: normal;
+		font-size: 0.75rem;
+		color: var(--silver-dim);
+	}
+
+	.strip {
+		padding-bottom: var(--space-2xl);
+	}
+
+	/* ---------- Responsive ---------- */
+	@media (max-width: 960px) {
+		.hero-frame {
+			padding-block: var(--space-xl) var(--space-md);
+		}
+
+		.hero-main {
+			grid-template-columns: 1fr;
+			gap: var(--space-lg);
+		}
+
+		.hero-panel {
+			max-width: 24rem;
+		}
+	}
+
+	@media (max-width: 860px) {
+		.build-row {
+			grid-template-columns: 3.5rem 1fr;
+		}
+
+		.build-side {
+			grid-column: 2;
+			flex-direction: row;
+			align-items: center;
+			gap: 0.9rem;
+		}
+
+		.gauge-bar.sm {
+			flex: 1;
+			max-width: 10rem;
+		}
+
+		.channel-grid {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		.channel-grid a:nth-child(2n) {
+			border-right: none;
+		}
+
+		.channel-grid a:nth-child(-n + 2) {
+			border-bottom: 1px solid var(--hairline);
+		}
+
+		.signal-feed a {
+			grid-template-columns: 1fr;
+			gap: 0.35rem;
+		}
+
+		.signal-arrow {
+			display: none;
+		}
+	}
+
+	@media (max-width: 520px) {
+		.hero-bottom {
+			font-size: 0.5rem;
+		}
+
+		.channel-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.channel-grid a {
+			border-right: none;
+			border-bottom: 1px solid var(--hairline);
+		}
+
+		.channel-grid a:last-child {
+			border-bottom: none;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.panel-dot,
+		.gauge-fill,
+		.build-row:hover .build-sprite,
+		.trainer {
+			animation: none;
+		}
+
+		.trainer {
+			transform: translateX(-50%);
+		}
+
+		.gauge-fill.build-hp {
+			width: var(--hp);
+			transition: none;
+		}
+	}
+</style>

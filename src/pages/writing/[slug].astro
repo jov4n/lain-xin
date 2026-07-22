@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('posts');
+	return posts
+		.filter((post) => !post.data.draft && !post.id.startsWith('_'))
+		.map((post) => ({
+			params: { slug: post.id },
+			props: { post },
+		}));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const dateLabel = post.data.date.toLocaleDateString('en-US', {
+	year: 'numeric',
+	month: 'long',
+	day: 'numeric',
+	timeZone: 'UTC',
+});
+---
+
+<BaseLayout title={post.data.title} description={post.data.summary}>
+	<Nav slot="nav" />
+
+	<article class="section is-visible container article">
+		<p class="section-label">
+			<a href="/writing">Writing</a>
+			<span aria-hidden="true"> · </span>
+			<time datetime={post.data.date.toISOString()}>{dateLabel}</time>
+		</p>
+		<h1 class="section-title">{post.data.title}</h1>
+		<p class="section-lead">{post.data.summary}</p>
+		<div class="prose">
+			<Content />
+		</div>
+		<p class="back">
+			<a href="/writing">← All writing</a>
+		</p>
+	</article>
+
+	<Footer slot="footer" />
+</BaseLayout>
+
+<style>
+	.article {
+		padding-bottom: var(--space-2xl);
+	}
+
+	.section-label a {
+		color: var(--phosphor-dim);
+	}
+
+	.prose {
+		max-width: 42rem;
+	}
+
+	.prose :global(p) {
+		margin-bottom: 1.1rem;
+		color: var(--silver);
+	}
+
+	.prose :global(strong) {
+		color: #eef0f4;
+	}
+
+	.back {
+		margin-top: var(--space-xl);
+	}
+
+	.back a {
+		font-size: 0.75rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+</style>

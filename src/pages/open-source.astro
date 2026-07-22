@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { getCollection, render } from 'astro:content';
+import site from '../data/site.json';
+
+const page = site.pages.openSource;
+const items = (await getCollection('opensource')).sort((a, b) => a.data.order - b.data.order);
+
+const rendered = await Promise.all(
+	items.map(async (item) => {
+		const { Content } = await render(item);
+		return { item, Content };
+	}),
+);
+---
+
+<BaseLayout title={page.label} description={page.description}>
+	<Nav slot="nav" />
+
+	<section class="section is-visible container page-head">
+		<p class="section-label">{page.label}</p>
+		<h1 class="section-title">{page.title}</h1>
+		<p class="section-lead">{page.lead}</p>
+	</section>
+
+	<section class="section is-visible container page-body">
+		<ul class="oss-list">
+			{
+				rendered.map(({ item, Content }) => (
+					<li>
+						<div class="oss-meta">
+							{item.data.language && <span class="lang">{item.data.language}</span>}
+							{item.data.repo && (
+								<a href={item.data.repo} target="_blank" rel="noopener noreferrer">
+									Repository →
+								</a>
+							)}
+						</div>
+						<h2>{item.data.title}</h2>
+						<p class="summary">{item.data.summary}</p>
+						<div class="body">
+							<Content />
+						</div>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	<Footer slot="footer" />
+</BaseLayout>
+
+<style>
+	.page-head {
+		padding-bottom: var(--space-md);
+	}
+
+	.page-body {
+		padding-top: 0;
+		padding-bottom: var(--space-2xl);
+	}
+
+	.oss-list li {
+		padding: var(--space-md) 0;
+		border-top: 1px solid var(--hairline);
+	}
+
+	.oss-list li:last-child {
+		border-bottom: 1px solid var(--hairline);
+	}
+
+	.oss-meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 1rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.lang {
+		font-size: 0.625rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--phosphor);
+	}
+
+	.oss-meta a {
+		font-size: 0.6875rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	h2 {
+		font-size: 1.35rem;
+		margin-bottom: 0.4rem;
+	}
+
+	.summary {
+		color: var(--silver-dim);
+		margin-bottom: 0.75rem;
+	}
+
+	.body :global(p) {
+		color: var(--silver-dim);
+		max-width: 42rem;
+	}
+</style>
