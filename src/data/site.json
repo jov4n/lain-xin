@@ -35,7 +35,7 @@
 		"work": {
 			"label": "Active builds",
 			"title": "Current work",
-			"lead": "Maya Unified - Voice Agent, Pokémon Infinite Fusion MMO, and various more",
+			"lead": "Maya Unified, Infinite Fusion MMO, Gophertown, and Kuray overworld work",
 			"moreLabel": "All projects →",
 			"moreHref": "/work"
 		},
@@ -59,8 +59,8 @@
 		"work": {
 			"label": "Work",
 			"title": "Projects in the lattice",
-			"lead": "Build surfaces for Maya Unified, Pokémon Infinite Fusion MMO and various other tooling.",
-			"description": "Active experiments — Maya Unified, Infinite Fusion MMO, and more."
+			"lead": "Maya Unified, Infinite Fusion MMO, Gophertown, Kuray Overworld Encounters, and related lab tooling.",
+			"description": "Active experiments from jov4n and System Nebula."
 		},
 		"writing": {
 			"label": "Writing",
