@@ -194,20 +194,6 @@ const fmt = (d: Date) =>
 		</p>
 	</section>
 
-	<section class="section container strip">
-		<p class="section-label">{home.index.label}</p>
-		<div class="channel-grid">
-			{
-				channels.map((ch) => (
-					<a href={withBase(ch.href)}>
-						<span class="ch-num">{ch.num}</span>
-						<span class="ch-name">{ch.name}</span>
-						<em>{ch.desc}</em>
-					</a>
-				))
-			}
-		</div>
-	</section>
 
 	<Footer slot="footer" />
 </BaseLayout>
